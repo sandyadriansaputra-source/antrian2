@@ -141,8 +141,8 @@
 
 <script>
 // PENTING: GANTI URL DIBAWAH INI DENGAN URL WEB APP GAS ANDA
-const SCRIPT_URL = "URL_WEB_APP_GAS_ANDA";
-let NAMA_OUTLET = "CP WONOMULYO"; // Default jika fetch gagal
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhwKivjQwsKlnAyS7keZfP93qnrxBCpVHdvuvSdaHcdoMO17IHJDHzskd-90ucjk7T/exec";
+let NAMA_OUTLET = "NAMA KANTOR"; // Default jika fetch gagal
 
 // Load Data Awal (Nama Outlet)
 window.onload = async () => {
