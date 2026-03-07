@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    :root {
+      --primary: #1b5e20;
+      --primary-light: #2e7d32;
+      --gold: #fbc02d;
+      --gold-dark: #9e7e1d;
+      --bg-soft: #f4f7f4;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    body { 
+      font-family: 'Inter', -apple-system, sans-serif; 
+      background: linear-gradient(rgba(27, 94, 32, 0.8), rgba(27, 94, 32, 0.9)), 
+                  url('https://www.pegadaian.co.id/img/bg-header.jpg') !important; 
+      background-repeat: no-repeat !important;
+      background-position: center center !important; 
+      background-attachment: fixed !important;
+      background-size: cover !important;
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100dvh; 
+      margin: 0;
+      padding: 15px; 
+      box-sizing: border-box;
+      overflow-y: auto; 
+    }
+
+    .form { 
+      background: rgba(255, 255, 255, 0.98); 
+      padding: 35px 20px; 
+      border-radius: 25px; 
+      width: 100%; 
+      max-width: 380px; 
+      text-align: center; 
+      border-bottom: 8px solid var(--gold); 
+      box-sizing: border-box; 
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+      animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .logo-container img { width: 100px; margin-bottom: 15px; }
+
+    h3 {
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0 0 5px 0;
+      text-transform: uppercase;
+    }
+
+    .unit-label {
+      color: var(--gold-dark);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      display: block;
+      letter-spacing: 1px;
+    }
+
+    input, select { 
+      width: 100%; 
+      padding: 15px; 
+      margin-bottom: 12px; 
+      border: 2px solid #e8e8e8; 
+      border-radius: 12px; 
+      font-size: 16px; 
+      box-sizing: border-box; 
+      outline: none; 
+      transition: all 0.3s ease;
+      background-color: #f9f9f9;
+      -webkit-appearance: none; 
+    }
+
+    input:focus, select:focus { 
+      border-color: var(--primary); 
+      background-color: #ffffff;
+    }
+
+    .btn-main { 
+      width: 100%; 
+      padding: 16px; 
+      margin-top: 5px; 
+      background: linear-gradient(135deg, var(--primary), var(--primary-light)); 
+      color: var(--gold); 
+      border: none; 
+      border-radius: 12px; 
+      font-size: 16px; 
+      font-weight: 800; 
+      cursor: pointer; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 15px rgba(27, 94, 32, 0.2);
+      transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-main:active { transform: scale(0.98); }
+
+    .footer-wm { 
+      margin-top: 30px; 
+      font-size: 9px; 
+      color: #aaa; 
+      text-transform: uppercase; 
+      border-top: 1px solid #f0f0f0; 
+      padding-top: 15px; 
+      line-height: 1.4;
+    }
+
+    .result-no {
+      font-size: 70px; 
+      font-weight: 900; 
+      color: var(--primary); 
+      margin: 10px 0;
+      line-height: 1;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @media screen and (max-width: 340px) {
+      .form { padding: 25px 15px; }
+      h3 { font-size: 18px; }
+      .result-no { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="form" id="box"></div>
+
+<script>
+// PENTING: GANTI URL DIBAWAH INI DENGAN URL WEB APP GAS ANDA
+const SCRIPT_URL = "URL_WEB_APP_GAS_ANDA";
+let NAMA_OUTLET = "CP WONOMULYO"; // Default jika fetch gagal
+
+// Load Data Awal (Nama Outlet)
+window.onload = async () => {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=getInitData`);
+    const data = await response.json();
+    NAMA_OUTLET = data.namaOutlet;
+  } catch (e) { console.log("Gagal memuat nama outlet"); }
+  resetForm();
+};
+
+const formTemplate = () => `
+  <div class="logo-container">
+    <img src="https://monev.pegadaian.co.id/userdata/profile_site/5662a273c270a215cdc46900d8a882f280e84b32c3f02.png">
+  </div>
+  <h3>Ambil Antrean</h3>
+  <span class="unit-label">${NAMA_OUTLET}</span>
+  <input type="text" id="nama" placeholder="NAMA NASABAH" required autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+  <select id="jenis">
+    <option value="" disabled selected>PILIH JENIS TRANSAKSI</option>
+    <option value="Tebus">TEBUS</option>
+    <option value="Ulang Gadai">ULANG GADAI</option>
+    <option value="Tambah UP">TAMBAH UP</option> 
+    <option value="Angsuran">ANGSURAN</option>
+    <option value="Lain-lain">LAIN-LAIN</option>
+  </select>
+  <button id="btnAmbil" class="btn-main" onclick="kirim()">Ambil Nomor</button>
+  <div class="footer-wm">
+    SISTEM ANTRIAN DIGITAL V.2 © 2026<br>
+    PT PEGADAIAN - <b>${NAMA_OUTLET}</b>
+  </div>
+`;
+
+function resetForm() {
+  document.getElementById('box').innerHTML = formTemplate();
+}
+
+async function kirim() {
+  const n = document.getElementById('nama').value;
+  const j = document.getElementById('jenis').value;
+  const btn = document.getElementById('btnAmbil');
+
+  if(!n || !j) { 
+    vibrateHandphone(50);
+    Swal.fire({
+      icon: 'warning',
+      title: 'Data Belum Lengkap',
+      text: 'Mohon isi nama dan pilih jenis transaksi.',
+      confirmButtonColor: '#1b5e20',
+      confirmButtonText: 'PAHAM'
+    });
+    return; 
+  }
+  
+  btn.disabled = true;
+  btn.innerText = "Memproses...";
+  
+  try {
+    // Kirim data ke GAS menggunakan fetch
+    const response = await fetch(`${SCRIPT_URL}?action=simpanAntrean&nama=${encodeURIComponent(n)}&jenis=${encodeURIComponent(j)}`);
+    const res = await response.json();
+    
+    vibrateHandphone([100, 50, 100]);
+    document.getElementById('box').innerHTML = `
+      <div class="logo-container">
+        <img src="https://monev.pegadaian.co.id/userdata/profile_site/5662a273c270a215cdc46900d8a882f280e84b32c3f02.png" width="90">
+      </div>
+      <p style="color:var(--gold-dark); font-weight:800; letter-spacing:1px; margin-bottom:5px; font-size:13px;">NOMOR ANDA</p>
+      <div class="result-no">${res.nomor}</div>
+      <p style="color:#666; margin-bottom:20px; font-size:14px; line-height:1.5;">Halo, <b style="color:var(--primary);">${res.nama}</b>.<br>Silakan menunggu antrean Anda dipanggil.</p>
+      <button onclick="resetForm()" class="btn-main" style="background:#f5f5f5; color:#666; box-shadow:none; padding:14px; font-size:14px; margin-top:5px; border:1px solid #ddd;">Kembali</button>
+      <div class="footer-wm">SISTEM ANTRIAN DIGITAL V.2 © 2026<br>PT PEGADAIAN - <b>${NAMA_OUTLET}</b></div>`;
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerText = "Ambil Nomor";
+    Swal.fire({
+      icon: 'error',
+      title: 'Koneksi Gagal',
+      text: 'Terjadi gangguan koneksi ke server.',
+      confirmButtonColor: '#d32f2f'
+    });
+  }
+}
+
+function vibrateHandphone(pattern) {
+  if (navigator.vibrate) {
+    navigator.vibrate(pattern);
+  }
+}
+</script>
+</body>
+</html>
