@@ -95,30 +95,31 @@ async function aktifkanLayar() {
 }
 
 function initYoutube(playlist) {
-  // Ambil Video ID pertama sebagai video utama
-  const firstId = playlist[0];
+  // 'playlist' di sini sudah berupa array ID yang dikirim oleh Code.gs
+  const firstVideoId = playlist[0];
   
   ytPlayer = new YT.Player('ytplayer', {
-    videoId: firstId,
+    videoId: firstVideoId,
     playerVars: { 
       'autoplay': 1, 
       'mute': 0, 
-      'playlist': playlist.join(','), 
+      'playlist': playlist.join(','), // Menggabungkan semua ID untuk looping
+      'loop': 1, 
       'controls': 0, 
       'modestbranding': 1, 
       'rel': 0, 
-      'showinfo': 0, 
-      'loop': 1,
-      'disablekb': 1
+      'showinfo': 0,
+      'iv_load_policy': 3
     },
     events: { 
       'onReady': e => {
-        e.target.setVolume(volumeSheet);
+        e.target.setVolume(volumeSheet); // Volume mengikuti Sel E2
         e.target.playVideo();
       },
       'onStateChange': e => {
+        // Jika video berhenti atau error, paksa putar video berikutnya
         if (e.data === YT.PlayerState.ENDED) {
-          e.target.playVideo(); // Paksa loop
+          e.target.playVideo();
         }
       }
     }
