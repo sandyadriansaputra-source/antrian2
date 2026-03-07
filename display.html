@@ -196,7 +196,7 @@ body {
 <script>
 // PENTING: GANTI URL DIBAWAH INI DENGAN URL WEB APP GAS ANDA
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyybyZQI_V86DAi2IvjvZ6teDzBoAMx8r40og7qldxQ22C6lDSJnX5eqcSMNRE65hIk/exec";
-let lastTime = "", audioOn = false, ytPlayer, currentSpeed = 5;
+let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50;
 
 async function aktifkanLayar() {
   document.getElementById('overlay').style.display = 'none';
@@ -212,6 +212,90 @@ async function aktifkanLayar() {
 
   setInterval(checkUpdate, 3000);
 }
+
+function initYoutube(playlist) {
+  ytPlayer = new YT.Player('ytplayer', {
+    videoId: playlist[0] || "QYigGbKVmmE",
+    playerVars: { 
+      'autoplay': 1, 
+      'mute': 0, 
+      'playlist': playlist.join(','), 
+      'controls': 0, 
+      'modestbranding': 1, 
+      'rel': 0, 
+      'showinfo': 0, 
+      'loop': 1
+    },
+    events: { 
+      'onReady': e => {
+        // Set volume awal sesuai sheet saat video siap
+        e.target.setVolume(volumeSheet);
+        e.target.playVideo();
+      } 
+    }
+  });
+}
+
+async function checkUpdate() {
+  if (!audioOn) return;
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
+    const res = await response.json();
+    
+    // Update Tampilan UI
+    if(res.l1) { document.getElementById('l1-no').innerText = res.l1.nomor; document.getElementById('l1-nama').innerText = res.l1.nama; }
+    if(res.l2) { document.getElementById('l2-no').innerText = res.l2.nomor; document.getElementById('l2-nama').innerText = res.l2.nama; }
+    document.getElementById('sisa').innerText = res.sisa;
+    document.getElementById('run-text').innerText = res.runningText;
+    
+    // UPDATE VOLUME YOUTUBE MENGIKUTI SEL E2
+    volumeSheet = res.settings.volume; // Ambil nilai 0-100 dari sheet
+    if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
+      ytPlayer.setVolume(volumeSheet);
+    }
+
+    // CEK PANGGILAN BARU
+    if(res.lastCall && res.lastCall.waktu !== lastTime) {
+      lastTime = res.lastCall.waktu;
+      
+      // LOGIKA SUARA: Kecilkan youtube sebentar saat panggil, lalu besarkan lagi
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(Math.max(volumeSheet - 30, 10)); // Turunkan volume youtube saat panggil
+      }
+
+      panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
+      
+      const card = document.getElementById("card-l" + res.lastCall.loket);
+      card.style.borderColor = "#fbc02d"; card.style.backgroundColor = "#fff9e6";
+      
+      // Kembalikan volume youtube setelah 8 detik (selesai bicara)
+      setTimeout(() => { 
+        card.style.borderColor = "#e0e0e0"; 
+        card.style.backgroundColor = "white"; 
+        if(ytPlayer) ytPlayer.setVolume(volumeSheet);
+      }, 8000);
+    }
+  } catch (e) { console.error("Monitor Sync Error"); }
+}
+
+function panggilSuara(no, nama, loket) {
+  window.speechSynthesis.cancel();
+  
+  // Format No: A 1 2 (di spasi agar dibaca per huruf)
+  let noSpaced = no.split('').join(' ');
+  let teks = `Nomor antrean, ${noSpaced}, . . Atas nama, ${nama.toLowerCase()}, . . Silahkan ke loket ${loket}`;
+  
+  let msg = new SpeechSynthesisUtterance(teks);
+  msg.lang = 'id-ID'; 
+  
+  // PENGATURAN SUARA MAKSIMAL
+  msg.volume = 1.0;  // Tetap 1.0 (Maksimal Browser) tidak peduli isi sel E2
+  msg.rate = 0.8;    // Kecepatan bicara lambat agar jelas
+  msg.pitch = 1.2;   // Nada sedikit tinggi agar lebih nyaring (melengking)
+  
+  window.speechSynthesis.speak(msg);
+}
+</script>
 
 function initYoutube(playlist) {
   ytPlayer = new YT.Player('ytplayer', {
