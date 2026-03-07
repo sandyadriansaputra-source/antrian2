@@ -4,153 +4,28 @@
 <base target="_top">
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
+/* CSS TETAP SAMA SEPERTI DESAIN LAMA ANDA */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;700;800&display=swap');
-
-:root {
-  --primary: #004d26;
-  --gold: #fbc02d;
-  --white: #ffffff;
-  --bg-light: #f8faf8;
-}
-
-body { 
-  background: #002211; 
-  color: var(--white); 
-  font-family: 'Inter', sans-serif; 
-  margin: 0; padding: 0; 
-  overflow: hidden; 
-  display: flex; flex-direction: column; 
-  height: 100vh; width: 100vw;
-}
-
+:root { --primary: #004d26; --gold: #fbc02d; --white: #ffffff; --bg-light: #f8faf8; }
+body { background: #002211; color: var(--white); font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; width: 100vw; }
 .main-content { display: flex; flex: 1; overflow: hidden; width: 100%; }
-
-.video-container { 
-  flex: 1.8; 
-  background: #000; 
-  border-right: 4px solid var(--gold);
-  position: relative;
-  overflow: hidden;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 10;
-  background: rgba(0,0,0,0);
-  cursor: none;
-}
-
-#ytplayer { 
-  width: 100%; height: 100%; border: none;
-  pointer-events: none;
-}
-
-.info-panel { 
-  flex: 1.2; 
-  background: var(--bg-light); 
-  display: flex; 
-  flex-direction: column;
-  height: 100%;
-}
-
-.header { 
-  padding: 15px; 
-  text-align: center; 
-  background: white; 
-  border-bottom: 4px solid var(--gold);
-  flex-shrink: 0;
-}
+.video-container { flex: 1.8; background: #000; border-right: 4px solid var(--gold); position: relative; overflow: hidden; }
+.video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0); cursor: none; }
+#ytplayer { width: 100%; height: 100%; border: none; pointer-events: none; }
+.info-panel { flex: 1.2; background: var(--bg-light); display: flex; flex-direction: column; height: 100%; }
+.header { padding: 15px; text-align: center; background: white; border-bottom: 4px solid var(--gold); flex-shrink: 0; }
 .header img { height: 60px; width: auto; }
-
-.antrian-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  gap: 15px;
-  min-height: 0; 
-}
-
-.loket-card {
-  flex: 1;
-  background: white;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  border: 1px solid #e0e0e0;
-  position: relative;
-  overflow: hidden;
-}
-
-.loket-label {
-  position: absolute;
-  top: 0; left: 0;
-  background: var(--primary);
-  color: var(--gold);
-  padding: 8px 25px;
-  font-weight: 900;
-  font-size: 1.2rem;
-  border-bottom-right-radius: 20px;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.no-antrian {
-  font-size: clamp(60px, 10vh, 140px);
-  font-weight: 900;
-  color: var(--primary);
-  font-family: 'Montserrat', sans-serif;
-  line-height: 1;
-}
-
-.nama-nasabah {
-  background: #f0f4f0;
-  color: #555;
-  padding: 10px 20px;
-  border-radius: 15px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  width: 85%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-}
-
-.footer-status {
-  background: white;
-  padding: 15px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 2px solid #eee;
-  flex-shrink: 0;
-}
+.antrian-container { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; min-height: 0; }
+.loket-card { flex: 1; background: white; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; position: relative; overflow: hidden; transition: all 0.5s ease; }
+.loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 8px 25px; font-weight: 900; font-size: 1.2rem; border-bottom-right-radius: 20px; font-family: 'Montserrat', sans-serif; }
+.no-antrian { font-size: clamp(60px, 10vh, 140px); font-weight: 900; color: var(--primary); font-family: 'Montserrat', sans-serif; line-height: 1; }
+.nama-nasabah { background: #f0f4f0; color: #555; padding: 10px 20px; border-radius: 15px; font-weight: 700; font-size: 1.1rem; width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+.footer-status { background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
 .sisa-box { text-align: left; }
 .sisa-box span { font-size: 0.8rem; color: #888; font-weight: 700; }
 .sisa-box b { font-size: 2.5rem; color: #d32f2f; display: block; line-height: 1; }
-
-.running-text-container { 
-  height: 55px; 
-  background: var(--primary); 
-  display: flex; align-items: center;
-  border-top: 3px solid var(--gold);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.running-text { 
-  white-space: nowrap; 
-  position: relative;
-  font-size: 1.3rem; 
-  font-weight: 600; 
-  color: white;
-}
-
+.running-text-container { height: 55px; background: var(--primary); display: flex; align-items: center; border-top: 3px solid var(--gold); overflow: hidden; flex-shrink: 0; }
+.running-text { white-space: nowrap; position: relative; font-size: 1.3rem; font-weight: 600; color: white; width: 100%; }
 #overlay { position: fixed; inset: 0; background: var(--primary); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
 .btn-start { background: var(--gold); color: var(--primary); padding: 25px 50px; border-radius: 50px; font-weight: 900; font-size: 20px; border: none; box-shadow: 0 8px 0 #b88a00; }
 </style>
@@ -159,7 +34,7 @@ body {
 
 <div id="overlay" onclick="aktifkanLayar()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">ANTRIAN DIGITAL</p>
+  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MEMUAT DATA...</p>
 </div>
 
 <div class="main-content">
@@ -194,8 +69,8 @@ body {
 </div>
 
 <script>
-// PENTING: GANTI URL DIBAWAH INI DENGAN URL WEB APP GAS ANDA
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyybyZQI_V86DAi2IvjvZ6teDzBoAMx8r40og7qldxQ22C6lDSJnX5eqcSMNRE65hIk/exec";
+// PENTING: GANTI DENGAN URL WEB APP ANDA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8Q9vQf1iyoNWshSk1GI8l-Y8vilujajGoJKey-eGgTbLYPtuLNExuJiDGhU_Ts2GE/exec";
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50;
 
 async function aktifkanLayar() {
@@ -207,15 +82,24 @@ async function aktifkanLayar() {
     const init = await resp.json();
     document.getElementById('outlet-label').innerText = init.namaOutlet;
     document.getElementById('unit-name').innerText = init.namaOutlet;
-    initYoutube(init.playlist);
-  } catch (e) { console.log("Gagal memuat data awal"); }
+    
+    // Inisialisasi Player
+    if (init.playlist && init.playlist.length > 0) {
+      initYoutube(init.playlist);
+    }
+  } catch (e) { 
+    console.error("Gagal memuat data awal:", e);
+  }
 
   setInterval(checkUpdate, 3000);
 }
 
 function initYoutube(playlist) {
+  // Ambil Video ID pertama sebagai video utama
+  const firstId = playlist[0];
+  
   ytPlayer = new YT.Player('ytplayer', {
-    videoId: playlist[0] || "QYigGbKVmmE",
+    videoId: firstId,
     playerVars: { 
       'autoplay': 1, 
       'mute': 0, 
@@ -224,14 +108,19 @@ function initYoutube(playlist) {
       'modestbranding': 1, 
       'rel': 0, 
       'showinfo': 0, 
-      'loop': 1
+      'loop': 1,
+      'disablekb': 1
     },
     events: { 
       'onReady': e => {
-        // Set volume awal sesuai sheet saat video siap
         e.target.setVolume(volumeSheet);
         e.target.playVideo();
-      } 
+      },
+      'onStateChange': e => {
+        if (e.data === YT.PlayerState.ENDED) {
+          e.target.playVideo(); // Paksa loop
+        }
+      }
     }
   });
 }
@@ -242,112 +131,67 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Update Tampilan UI
-    if(res.l1) { document.getElementById('l1-no').innerText = res.l1.nomor; document.getElementById('l1-nama').innerText = res.l1.nama; }
-    if(res.l2) { document.getElementById('l2-no').innerText = res.l2.nomor; document.getElementById('l2-nama').innerText = res.l2.nama; }
-    document.getElementById('sisa').innerText = res.sisa;
-    document.getElementById('run-text').innerText = res.runningText;
+    // Update Nomor di Layar
+    if(res.l1) {
+      document.getElementById('l1-no').innerText = res.l1.nomor || "-";
+      document.getElementById('l1-nama').innerText = res.l1.nama || "Petugas Siap";
+    }
+    if(res.l2) {
+      document.getElementById('l2-no').innerText = res.l2.nomor || "-";
+      document.getElementById('l2-nama').innerText = res.l2.nama || "Petugas Siap";
+    }
     
-    // UPDATE VOLUME YOUTUBE MENGIKUTI SEL E2
-    volumeSheet = res.settings.volume; // Ambil nilai 0-100 dari sheet
-    if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
-      ytPlayer.setVolume(volumeSheet);
+    document.getElementById('sisa').innerText = res.sisa || "0";
+    document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
+    
+    // Sinkronisasi Volume YouTube (E2)
+    if(res.settings && res.settings.volume !== undefined) {
+      volumeSheet = res.settings.volume;
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(volumeSheet);
+      }
     }
 
-    // CEK PANGGILAN BARU
+    // Cek Jika Ada Panggilan Suara Baru
     if(res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
       
-      // LOGIKA SUARA: Kecilkan youtube sebentar saat panggil, lalu besarkan lagi
+      // Ducking: Turunkan suara youtube saat antrean dipanggil
       if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
-        ytPlayer.setVolume(Math.max(volumeSheet - 30, 10)); // Turunkan volume youtube saat panggil
+        ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       }
 
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
       const card = document.getElementById("card-l" + res.lastCall.loket);
-      card.style.borderColor = "#fbc02d"; card.style.backgroundColor = "#fff9e6";
-      
-      // Kembalikan volume youtube setelah 8 detik (selesai bicara)
-      setTimeout(() => { 
-        card.style.borderColor = "#e0e0e0"; 
-        card.style.backgroundColor = "white"; 
-        if(ytPlayer) ytPlayer.setVolume(volumeSheet);
-      }, 8000);
+      if(card) {
+        card.style.borderColor = "#fbc02d";
+        card.style.backgroundColor = "#fff9e6";
+        setTimeout(() => {
+          card.style.borderColor = "#e0e0e0";
+          card.style.backgroundColor = "white";
+          if(ytPlayer) ytPlayer.setVolume(volumeSheet);
+        }, 10000); // 10 detik durasi efek ducking
+      }
     }
-  } catch (e) { console.error("Monitor Sync Error"); }
+  } catch (e) { 
+    console.error("Monitor Sync Error:", e); 
+  }
 }
 
 function panggilSuara(no, nama, loket) {
   window.speechSynthesis.cancel();
   
-  // Format No: A 1 2 (di spasi agar dibaca per huruf)
-  let noSpaced = no.split('').join(' ');
+  // Membaca nomor per digit agar jelas (A 1 2)
+  let noSpaced = no.toString().split('').join(' ');
   let teks = `Nomor antrean, ${noSpaced}, . . Atas nama, ${nama.toLowerCase()}, . . Silahkan ke loket ${loket}`;
   
   let msg = new SpeechSynthesisUtterance(teks);
   msg.lang = 'id-ID'; 
+  msg.volume = 1.0; // SUARA ANTRIAN TETAP MAKSIMAL
+  msg.rate = 0.8; 
+  msg.pitch = 1.2; 
   
-  // PENGATURAN SUARA MAKSIMAL
-  msg.volume = 1.0;  // Tetap 1.0 (Maksimal Browser) tidak peduli isi sel E2
-  msg.rate = 0.8;    // Kecepatan bicara lambat agar jelas
-  msg.pitch = 1.2;   // Nada sedikit tinggi agar lebih nyaring (melengking)
-  
-  window.speechSynthesis.speak(msg);
-}
-</script>
-
-function initYoutube(playlist) {
-  ytPlayer = new YT.Player('ytplayer', {
-    videoId: playlist[0] || "QYigGbKVmmE",
-    playerVars: { 
-      'autoplay': 1, 'mute': 0, 'playlist': playlist.join(','), 'controls': 0, 
-      'modestbranding': 1, 'rel': 0, 'showinfo': 0, 'iv_load_policy': 3, 'disablekb': 1
-    },
-    events: { 
-      'onReady': async e => {
-        try {
-          const resp = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
-          const res = await resp.json();
-          e.target.setVolume(res.settings.volume);
-        } catch(err) {}
-        e.target.playVideo();
-      } 
-    }
-  });
-}
-
-async function checkUpdate() {
-  if (!audioOn) return;
-  try {
-    const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
-    const res = await response.json();
-    
-    if(res.l1) { document.getElementById('l1-no').innerText = res.l1.nomor; document.getElementById('l1-nama').innerText = res.l1.nama; }
-    if(res.l2) { document.getElementById('l2-no').innerText = res.l2.nomor; document.getElementById('l2-nama').innerText = res.l2.nama; }
-    document.getElementById('sisa').innerText = res.sisa;
-    document.getElementById('run-text').innerText = res.runningText;
-    
-    // Update Kecepatan Marquee
-    let newSpeed = Math.floor(100 / res.settings.kecepatan * 5); 
-    document.getElementById('run-text').scrollAmount = newSpeed;
-
-    if(ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(res.settings.volume);
-
-    if(res.lastCall && res.lastCall.waktu !== lastTime) {
-      lastTime = res.lastCall.waktu;
-      panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
-      const card = document.getElementById("card-l" + res.lastCall.loket);
-      card.style.borderColor = "#fbc02d"; card.style.backgroundColor = "#fff9e6";
-      setTimeout(() => { card.style.borderColor = "#e0e0e0"; card.style.backgroundColor = "white"; }, 8000);
-    }
-  } catch (e) { console.error("Monitor Sync Error"); }
-}
-
-function panggilSuara(no, nama, loket) {
-  window.speechSynthesis.cancel();
-  let msg = new SpeechSynthesisUtterance(`Nomor antrean ${no}. Atas nama ${nama.toLowerCase()}. Silahkan ke loket ${loket}`);
-  msg.lang = 'id-ID'; msg.rate = 0.8;
   window.speechSynthesis.speak(msg);
 }
 </script>
