@@ -195,7 +195,7 @@ body {
 
 <script>
 // PENTING: GANTI URL DIBAWAH INI DENGAN URL WEB APP GAS ANDA
-const SCRIPT_URL = "URL_WEB_APP_GAS_ANDA";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhwKivjQwsKlnAyS7keZfP93qnrxBCpVHdvuvSdaHcdoMO17IHJDHzskd-90ucjk7T/exec";
 let lastTime = "", audioOn = false, ytPlayer, currentSpeed = 5;
 
 async function aktifkanLayar() {
