@@ -7,107 +7,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;700;800&display=swap');
-    
-    :root { 
-      --primary: #004d26; 
-      --primary-dark: #002211;
-      --gold: #fbc02d; 
-      --white: #ffffff; 
-      --bg-light: #f8faf8; 
-    }
-
-    body { 
-      background: #001a0d; color: var(--white); font-family: 'Inter', sans-serif; 
-      margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; 
-      height: 100vh; width: 100vw; 
-    }
-
-    /* --- LAYOUT AUTO-FIT --- */
+    :root { --primary: #004d26; --gold: #fbc02d; --white: #ffffff; --bg-light: #f8faf8; }
+    body { background: #001a0d; color: var(--white); font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; width: 100vw; }
     .main-content { display: flex; flex: 1; overflow: hidden; width: 100%; }
-    
-    .video-container { 
-      flex: 1.8; background: #000; border-right: 5px solid var(--gold); 
-      position: relative; overflow: hidden; 
-    }
+    .video-container { flex: 1.8; background: #000; border-right: 5px solid var(--gold); position: relative; overflow: hidden; }
     #ytplayer { width: 100%; height: 100%; border: none; pointer-events: none; }
-
-    .info-panel { 
-      flex: 1.2; background: var(--bg-light); display: flex; 
-      flex-direction: column; height: 100%; 
-    }
-
-    /* --- HEADER PRO --- */
-    .header { 
-      padding: 20px; text-align: center; background: white; 
-      border-bottom: 5px solid var(--gold); flex-shrink: 0; 
-    }
+    .info-panel { flex: 1.2; background: var(--bg-light); display: flex; flex-direction: column; height: 100%; }
+    .header { padding: 20px; text-align: center; background: white; border-bottom: 5px solid var(--gold); flex-shrink: 0; }
     .header img { height: 55px; width: auto; }
-
-    /* --- ANTRIAN CARD PRO --- */
-    .antrian-container { 
-      flex: 1; display: flex; flex-direction: column; 
-      padding: 20px; gap: 20px; min-height: 0; 
-    }
-    
-    .loket-card { 
-      flex: 1; background: white; border-radius: 30px; 
-      display: flex; flex-direction: column; align-items: center; 
-      justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-      border: 1px solid #ddd; position: relative; overflow: hidden; 
-      transition: background 0.5s ease;
-    }
-    
-    .loket-label { 
-      position: absolute; top: 0; left: 0; background: var(--primary); 
-      color: var(--gold); padding: 10px 30px; font-weight: 900; 
-      font-size: 1.4rem; border-bottom-right-radius: 30px; 
-      font-family: 'Montserrat', sans-serif; 
-    }
-
-    .no-antrian { 
-      font-size: clamp(100px, 15vh, 200px); font-weight: 900; 
-      color: var(--primary); font-family: 'Montserrat', sans-serif; 
-      line-height: 0.8; margin-top: 10px;
-    }
-
-    .nama-nasabah { 
-      background: #f0f4f0; color: #444; padding: 12px 25px; 
-      border-radius: 15px; font-weight: 800; font-size: 1.4rem; 
-      width: 85%; text-align: center; margin-top: 20px;
-      text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    /* --- FOOTER & RUNNING TEXT --- */
-    .footer-status { 
-      background: white; padding: 15px 30px; display: flex; 
-      justify-content: space-between; align-items: center; 
-      border-top: 2px solid #eee; flex-shrink: 0; 
-    }
+    .antrian-container { flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 20px; min-height: 0; }
+    .loket-card { flex: 1; background: white; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #ddd; position: relative; overflow: hidden; }
+    .loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 10px 30px; font-weight: 900; font-size: 1.4rem; border-bottom-right-radius: 30px; font-family: 'Montserrat', sans-serif; }
+    .no-antrian { font-size: clamp(100px, 15vh, 200px); font-weight: 900; color: var(--primary); font-family: 'Montserrat', sans-serif; line-height: 0.8; margin-top: 10px; }
+    .nama-nasabah { background: #f0f4f0; color: #444; padding: 12px 25px; border-radius: 15px; font-weight: 800; font-size: 1.4rem; width: 85%; text-align: center; margin-top: 20px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .footer-status { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
     .sisa-box { text-align: left; }
-    .sisa-box span { font-size: 0.9rem; color: #888; font-weight: 700; }
     .sisa-box b { font-size: 2.5rem; color: #d32f2f; display: block; line-height: 1; }
-
-    .running-text-container { 
-      height: 60px; background: var(--primary); display: flex; 
-      align-items: center; border-top: 4px solid var(--gold); 
-      overflow: hidden; flex-shrink: 0; 
-    }
-    .running-text { 
-      white-space: nowrap; font-size: 1.5rem; font-weight: 700; 
-      color: white; width: 100%; 
-    }
-
-    /* --- START OVERLAY --- */
-    #overlay { 
-      position: fixed; inset: 0; background: var(--primary); 
-      z-index: 999; display: flex; flex-direction: column; 
-      align-items: center; justify-content: center; cursor: pointer; 
-    }
-    .btn-start { 
-      background: var(--gold); color: var(--primary); 
-      padding: 30px 60px; border-radius: 60px; font-weight: 900; 
-      font-size: 24px; border: none; box-shadow: 0 10px 0 #b88a00; 
-    }
+    .running-text-container { height: 60px; background: var(--primary); display: flex; align-items: center; border-top: 4px solid var(--gold); overflow: hidden; flex-shrink: 0; }
+    .running-text { white-space: nowrap; font-size: 1.5rem; font-weight: 700; color: white; width: 100%; }
+    #overlay { position: fixed; inset: 0; background: var(--primary); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+    .btn-start { background: var(--gold); color: var(--primary); padding: 30px 60px; border-radius: 60px; font-weight: 900; font-size: 24px; border: none; box-shadow: 0 10px 0 #b88a00; }
   </style>
 </head>
 <body>
@@ -147,20 +66,21 @@
 </div>
 
 <div class="running-text-container">
-  <marquee id="run-text" class="running-text" scrollamount="6">Selamat Datang di PT Pegadaian - Mengatasi Masalah Tanpa Masalah</marquee>
+  <marquee id="run-text" class="running-text" scrollamount="6">Selamat Datang di PT Pegadaian</marquee>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
-const VIDEO_AWAL = "aT9V3HU3YY0"; 
+const VIDEO_PANCINGAN = "aT9V3HU3YY0"; 
 
-let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentPlaylist = [];
+let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50;
+let currentPlaylist = [];
+let currentVideoIndex = 0; // Kunci utama sequence manual
 
 async function aktifkanMonitor() {
   document.getElementById('overlay').style.display = 'none';
   audioOn = true;
   
-  // Load data awal (termasuk playlist Kolom B)
   try {
     const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
     const init = await resp.json();
@@ -168,11 +88,9 @@ async function aktifkanMonitor() {
     if (init.playlist && init.playlist.length > 0) {
       currentPlaylist = init.playlist;
     }
-  } catch (e) { console.error("Gagal Muat Data Awal"); }
+  } catch (e) { console.error("Gagal Muat Data"); }
 
-  // Inisialisasi Player
-  initYoutube(currentPlaylist.length > 0 ? currentPlaylist[0] : VIDEO_AWAL);
-  
+  initYoutube(currentPlaylist.length > 0 ? currentPlaylist[0] : VIDEO_PANCINGAN);
   setInterval(checkUpdate, 3000);
 }
 
@@ -183,55 +101,41 @@ function initYoutube(videoId) {
   ytPlayer = new YT.Player('ytplayer', {
     height: '100%', width: '100%',
     videoId: videoId,
-    playerVars: {
-      'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1, 'rel': 0, 
-      'modestbranding': 1, 'iv_load_policy': 3, 'enablejsapi': 1, 
-      'origin': window.location.origin
-    },
+    playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'rel': 0, 'modestbranding': 1, 'enablejsapi': 1 },
     events: {
       'onReady': (event) => {
         event.target.playVideo();
-        setTimeout(() => {
-          event.target.unMute();
-          event.target.setVolume(volumeSheet);
-          // Jika ada playlist, muat semuanya ke sistem YouTube
-          if (currentPlaylist.length > 0) {
-            event.target.loadPlaylist(currentPlaylist, 0, 0);
-            event.target.setLoop(true);
-          }
-        }, 2000);
+        setTimeout(() => { event.target.unMute(); event.target.setVolume(volumeSheet); }, 2000);
       },
       'onStateChange': (event) => {
-        // LOGIKA LOOP PLAYLIST KOLOM B
+        // --- LOGIKA MANUAL NEXT VIDEO ---
         if (event.data === YT.PlayerState.ENDED) {
-          if (currentPlaylist.length > 1) {
-            const currentIndex = event.target.getPlaylistIndex();
-            // Jika video terakhir di kolom B selesai, kembali ke B2
-            if (currentIndex === currentPlaylist.length - 1) {
-              event.target.playVideoAt(0);
-            } else {
-              event.target.nextVideo();
-            }
-          } else {
-            event.target.playVideo(); // Ulang video tunggal
-          }
+          putarVideoBerikutnya();
         }
-        // Cegah video berhenti (Pause)
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
+      },
+      'onError': () => {
+        console.warn("Video bermasalah, loncat ke berikutnya...");
+        putarVideoBerikutnya();
       }
     }
   });
 }
 
-function syncPlaylist(newList) {
-  if (!newList || newList.length === 0) return;
-  if (JSON.stringify(newList) !== JSON.stringify(currentPlaylist)) {
-    currentPlaylist = newList;
-    if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
-      ytPlayer.loadPlaylist(currentPlaylist, 0, 0);
-      ytPlayer.setLoop(true);
-    }
+function putarVideoBerikutnya() {
+  if (currentPlaylist.length === 0) {
+    ytPlayer.loadVideoById(VIDEO_PANCINGAN);
+    return;
   }
+
+  currentVideoIndex++;
+  // Jika sudah di akhir kolom B, kembali ke sel B2 (index 0)
+  if (currentVideoIndex >= currentPlaylist.length) {
+    currentVideoIndex = 0;
+  }
+
+  console.log("Memutar video index:", currentVideoIndex, "ID:", currentPlaylist[currentVideoIndex]);
+  ytPlayer.loadVideoById(currentPlaylist[currentVideoIndex]);
 }
 
 async function checkUpdate() {
@@ -240,7 +144,11 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    if (res.playlist) syncPlaylist(res.playlist);
+    // Sinkronisasi Playlist jika ada perubahan di Google Sheets
+    if (res.playlist && JSON.stringify(res.playlist) !== JSON.stringify(currentPlaylist)) {
+      currentPlaylist = res.playlist;
+      console.log("Playlist diperbarui dari Sheets");
+    }
 
     document.getElementById('l1-no').innerText = res.l1?.nomor || "-";
     document.getElementById('l1-nama').innerText = res.l1?.nama || "Petugas Siap";
@@ -256,13 +164,12 @@ async function checkUpdate() {
 
     if (res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
-      // Musik Pelan saat Panggilan
       if (ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
       const card = document.getElementById("card-l" + res.lastCall.loket);
       if (card) {
-        card.style.backgroundColor = "#fff9e6"; // Highlight kuning tipis
+        card.style.backgroundColor = "#fff9e6";
         setTimeout(() => {
           card.style.backgroundColor = "white";
           if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
