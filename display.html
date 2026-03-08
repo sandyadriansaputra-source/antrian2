@@ -38,8 +38,7 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 </div>
 
 <div class="main-content">
-  <div class="video-container">
-    <div class="video-overlay"></div>
+  <div class="video-container" id="player-anchor">
     <div id="ytplayer"></div>
   </div>
   
@@ -95,31 +94,40 @@ async function aktifkanLayar() {
 }
 
 function initYoutube(playlist) {
+  if (!playlist || playlist.length === 0) return;
+  
   const firstId = playlist[0];
   const list = playlist.join(',');
-  // PERBAIKAN: Gunakan selector class yang benar
   const container = document.querySelector('.video-container'); 
   
-  // Masukkan iframe ke dalam container
-  container.innerHTML = `<iframe id="ytplayer" 
-    src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${list}&loop=1&controls=0&enablejsapi=1&origin=${window.location.origin}" 
-    frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%;"></iframe>`;
+  // Masukkan Iframe secara bersih
+  // Mute=1 wajib agar autoplay diizinkan browser
+  container.innerHTML = `
+    <iframe id="ytplayer" 
+      src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=1&playlist=${list}&loop=1&controls=0&enablejsapi=1&origin=${window.location.origin}" 
+      allow="autoplay; encrypted-media" 
+      style="width:100%; height:100%; border:none;">
+    </iframe>`;
 
-  // Hubungkan dengan API YouTube untuk kontrol volume
+  // Hubungkan ke API untuk kontrol volume & buka suara (unmute)
   setTimeout(() => {
-    try {
-      ytPlayer = new YT.Player('ytplayer', {
-        events: {
-          'onReady': (e) => {
-            e.target.setVolume(volumeSheet); // Gunakan variabel yang benar
-            e.target.playVideo();
+    ytPlayer = new YT.Player('ytplayer', {
+      events: {
+        'onReady': (event) => {
+          // Buka suara setelah video berjalan
+          event.target.unMute();
+          event.target.setVolume(volumeSheet);
+          event.target.playVideo();
+        },
+        'onStateChange': (event) => {
+          // Jika video berhenti, paksa jalan lagi
+          if (event.data === YT.PlayerState.PAUSED || event.data === -1) {
+            event.target.playVideo();
           }
         }
-      });
-    } catch (err) {
-      console.error("YouTube API Ready Error:", err);
-    }
-  }, 2000);
+      }
+    });
+  }, 4000); // Jeda 4 detik untuk handshake
 }
 
 async function checkUpdate() {
