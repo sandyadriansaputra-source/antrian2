@@ -56,7 +56,7 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <div id="overlay" onclick="aktifkanLayar()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">KLIK UNTUK MEMULAI</p>
+  <p id="status-text" style="margin-top:20px; letter-spacing: 2px; color: white;">KLIK UNTUK MEMULAI</p>
 </div>
 
 <div class="main-content">
@@ -91,15 +91,50 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4HODqOSCibJ3vj3eMFZ6A5unCJv7HoFtdktt7qKc4JGtwWPkU_7ST5-FLWbxt67VU/exec";
-const VIDEO_AWAL = "aT9V3HU3YY0"; 
+const VIDEO_PANCINGAN = "aT9V3HU3YY0"; 
 
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentPlaylist = [];
 
+// 1. Fungsi saat tombol diklik
 async function aktifkanLayar() {
-  document.getElementById('overlay').style.display = 'none';
-  audioOn = true;
-  initYoutube(VIDEO_AWAL);
-  setTimeout(muatDataAwal, 2000);
+  document.getElementById('status-text').innerText = "MENGHUBUNGKAN KE SPREADSHEET...";
+  
+  try {
+    // Ambil data dari Spreadsheet SEBELUM player dibuat
+    const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
+    const init = await resp.json();
+    
+    document.getElementById('overlay').style.display = 'none';
+    audioOn = true;
+    document.getElementById('outlet-label').innerText = init.namaOutlet;
+
+    // Tentukan video mana yang harus diputar pertama kali
+    let videoToPlay = VIDEO_PANCINGAN;
+    if (init.playlist && init.playlist.length > 0) {
+      currentPlaylist = init.playlist;
+      videoToPlay = currentPlaylist[0];
+    }
+
+    // Buat player dengan video asli dari B2 (atau pancingan jika kosong)
+    initYoutube(videoToPlay);
+
+    // Jika ada playlist lengkap, muat sisa videonya
+    if (currentPlaylist.length > 1) {
+      setTimeout(() => {
+        if (ytPlayer && ytPlayer.loadPlaylist) {
+          ytPlayer.loadPlaylist(currentPlaylist, 0, 0);
+        }
+      }, 3000);
+    }
+
+  } catch (e) { 
+    console.error("Gagal koneksi:", e);
+    // Jika gagal fetch, tetap masuk ke monitor pakai pancingan
+    document.getElementById('overlay').style.display = 'none';
+    audioOn = true;
+    initYoutube(VIDEO_PANCINGAN);
+  }
+
   setInterval(checkUpdate, 3000);
 }
 
@@ -118,22 +153,23 @@ function initYoutube(videoId) {
     events: {
       'onReady': (event) => {
         event.target.playVideo();
-        setTimeout(() => { event.target.unMute(); event.target.setVolume(volumeSheet); }, 1500);
+        setTimeout(() => { 
+          event.target.unMute(); 
+          event.target.setVolume(volumeSheet); 
+          event.target.playVideo();
+        }, 2000);
       },
       'onStateChange': (event) => {
-        // --- LOGIKA UTAMA SINKRONISASI PLAYLIST ---
         if (event.data === YT.PlayerState.ENDED) {
-           // Jika video berakhir, paksa player memutar video berikutnya dalam list
-           if (currentPlaylist.length > 0) {
+           if (currentPlaylist.length > 1) {
               const currentIndex = event.target.getPlaylistIndex();
-              // Jika ini video terakhir di list, kembali ke index 0 (Looping)
               if (currentIndex === currentPlaylist.length - 1) {
                 event.target.playVideoAt(0);
               } else {
                 event.target.nextVideo();
               }
            } else {
-              event.target.playVideo(); // Ulang video yang sama jika playlist kosong
+              event.target.playVideo();
            }
         }
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
@@ -142,25 +178,12 @@ function initYoutube(videoId) {
   });
 }
 
-async function muatDataAwal() {
-  try {
-    const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
-    const init = await resp.json();
-    document.getElementById('outlet-label').innerText = init.namaOutlet;
-    if (init.playlist && init.playlist.length > 0) {
-      updatePlaylist(init.playlist);
-    }
-  } catch (e) { console.error("Gagal muat data awal:", e); }
-}
-
 function updatePlaylist(newList) {
   if (!newList || newList.length === 0) return;
-  
-  // Hanya ganti playlist jika ada perubahan di Spreadsheet Kolom B
+  // Bandingkan list untuk menghindari restart video jika data sama
   if (JSON.stringify(newList) !== JSON.stringify(currentPlaylist)) {
+    console.log("Perubahan Spreadsheet terdeteksi, memperbarui antrean video...");
     currentPlaylist = newList;
-    console.log("Memperbarui Playlist Monitor:", currentPlaylist);
-    
     if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
       ytPlayer.loadPlaylist(currentPlaylist, 0, 0);
       ytPlayer.setLoop(true);
@@ -191,7 +214,6 @@ async function checkUpdate() {
 
     if (res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
-      // Pelankan musik saat ada panggilan suara
       if (ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
@@ -200,7 +222,6 @@ async function checkUpdate() {
         card.style.backgroundColor = "#fff9e6";
         setTimeout(() => {
           card.style.backgroundColor = "white";
-          // Kembalikan volume musik setelah panggilan selesai
           if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
         }, 8000);
       }
