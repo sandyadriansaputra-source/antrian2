@@ -65,15 +65,13 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 </div>
 
 <div class="running-text-container">
-  <div id="run-text-wrapper" class="running-text">
-    <span id="run-text">Memuat informasi...</span>
-  </div>
+  <marquee id="run-text" class="running-text" scrollamount="5">Selamat Datang di Pegadaian</marquee>
 </div>
 
 <script>
 // PENTING: GANTI DENGAN URL WEB APP ANDA
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
-let lastTime = "", audioOn = false, ytPlayer, currentPlaylist = [];
+let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50;
 
 async function aktifkanLayar() {
   document.getElementById('overlay').style.display = 'none';
@@ -83,35 +81,41 @@ async function aktifkanLayar() {
     const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
     const init = await resp.json();
     document.getElementById('outlet-label').innerText = init.namaOutlet;
-    currentPlaylist = init.playlist;
+    document.getElementById('unit-name').innerText = init.namaOutlet;
     
-    // FORCE LOAD VIDEO MENGGUNAKAN IFRAME API YANG LEBIH STABIL
-    initYoutube(currentPlaylist);
-    
-    setInterval(checkUpdate, 3000);
-  } catch (e) { console.error("Error Init:", e); }
+    // Inisialisasi Player
+    if (init.playlist && init.playlist.length > 0) {
+      initYoutube(init.playlist);
+    }
+  } catch (e) { 
+    console.error("Gagal memuat data awal:", e);
+  }
+
+  setInterval(checkUpdate, 3000);
 }
 
 function initYoutube(playlist) {
+  // Kita gunakan Iframe standar YouTube agar lebih stabil dari blokir domain
   const firstId = playlist[0];
   const list = playlist.join(',');
+  const container = document.getElementById('video-container'); // Pastikan ID ini ada di HTML Anda
   
-  // Gunakan ID video-container untuk menyisipkan iframe secara bersih
-  document.querySelector('.video-container').innerHTML = `
-    <iframe id="ytplayer" 
-      src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${list}&loop=1&controls=0&enablejsapi=1&origin=${window.location.origin}" 
-      allow="autoplay; encrypted-media" 
-      style="width:100%; height:100%; border:none;">
-    </iframe>`;
+  // Hapus isi container dan ganti dengan iframe murni
+  container.innerHTML = `<iframe id="ytplayer" 
+    src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${list}&loop=1&controls=0&enablejsapi=1" 
+    frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%;"></iframe>`;
 
-  // Hubungkan dengan API untuk kontrol volume saat panggil suara
+  // Hubungkan kembali dengan API untuk kontrol volume
   setTimeout(() => {
     ytPlayer = new YT.Player('ytplayer', {
       events: {
-        'onReady': (e) => { e.target.playVideo(); }
+        'onReady': (e) => {
+          e.target.setVolume(volSheet);
+          e.target.playVideo();
+        }
       }
     });
-  }, 3000);
+  }, 2000);
 }
 
 async function checkUpdate() {
@@ -120,51 +124,67 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Update Nomor Antrean
-    document.getElementById('l1-no').innerText = res.l1.nomor;
-    document.getElementById('l1-nama').innerText = res.l1.nama;
-    document.getElementById('l2-no').innerText = res.l2.nomor;
-    document.getElementById('l2-nama').innerText = res.l2.nama;
-    document.getElementById('sisa').innerText = res.sisa;
+    // Update Nomor di Layar
+    if(res.l1) {
+      document.getElementById('l1-no').innerText = res.l1.nomor || "-";
+      document.getElementById('l1-nama').innerText = res.l1.nama || "Petugas Siap";
+    }
+    if(res.l2) {
+      document.getElementById('l2-no').innerText = res.l2.nomor || "-";
+      document.getElementById('l2-nama').innerText = res.l2.nama || "Petugas Siap";
+    }
     
-    // UPDATE RUNNING TEXT & KECEPATAN (Sel D2)
-    const textEl = document.getElementById('run-text');
-    textEl.innerText = res.runningText;
+    document.getElementById('sisa').innerText = res.sisa || "0";
+    document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
     
-    // Mengatur scrollamount secara dinamis jika masih menggunakan tag <marquee>
-    const marquee = document.getElementById('run-text-wrapper');
-    // Jika menggunakan marquee tag:
-    // document.getElementById('run-text-marquee').scrollAmount = res.settings.kecepatan;
-
-    // Update Volume YouTube (Sel E2)
-    if(ytPlayer && ytPlayer.setVolume) {
-      ytPlayer.setVolume(res.settings.volume);
+    // Sinkronisasi Volume YouTube (E2)
+    if(res.settings && res.settings.volume !== undefined) {
+      volumeSheet = res.settings.volume;
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(volumeSheet);
+      }
     }
 
+    // Cek Jika Ada Panggilan Suara Baru
     if(res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
-      panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket, res.settings.volume);
+      
+      // Ducking: Turunkan suara youtube saat antrean dipanggil
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
+      }
+
+      panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
+      
+      const card = document.getElementById("card-l" + res.lastCall.loket);
+      if(card) {
+        card.style.borderColor = "#fbc02d";
+        card.style.backgroundColor = "#fff9e6";
+        setTimeout(() => {
+          card.style.borderColor = "#e0e0e0";
+          card.style.backgroundColor = "white";
+          if(ytPlayer) ytPlayer.setVolume(volumeSheet);
+        }, 10000); // 10 detik durasi efek ducking
+      }
     }
-  } catch (e) { console.log("Sync Error"); }
+  } catch (e) { 
+    console.error("Monitor Sync Error:", e); 
+  }
 }
 
-function panggilSuara(no, nama, loket, volSheet) {
+function panggilSuara(no, nama, loket) {
   window.speechSynthesis.cancel();
   
-  // DUCKING: Kecilkan youtube
-  if(ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(10);
-
+  // Membaca nomor per digit agar jelas (A 1 2)
   let noSpaced = no.toString().split('').join(' ');
-  let msg = new SpeechSynthesisUtterance(`Nomor antrean, ${noSpaced}, . Atas nama, ${nama.toLowerCase()}, . Silahkan ke loket ${loket}`);
-  msg.lang = 'id-ID'; 
-  msg.volume = 1.0; 
-  msg.rate = 0.8; 
+  let teks = `Nomor antrean, ${noSpaced}, . . Atas nama, ${nama.toLowerCase()}, . . Silahkan ke loket ${loket}`;
   
-  msg.onend = () => {
-    // Kembalikan volume youtube
-    if(ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(volSheet);
-  };
-
+  let msg = new SpeechSynthesisUtterance(teks);
+  msg.lang = 'id-ID'; 
+  msg.volume = 1.0; // SUARA ANTRIAN TETAP MAKSIMAL
+  msg.rate = 0.8; 
+  msg.pitch = 1.2; 
+  
   window.speechSynthesis.speak(msg);
 }
 </script>
