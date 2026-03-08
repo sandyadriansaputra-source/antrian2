@@ -1,62 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-<base target="_top">
-<script src="https://www.youtube.com/iframe_api"></script>
-<style>
-/* CSS TETAP SESUAI DESAIN ANDA - NOMOR DOMINAN & NAMA NASABAH PROPORSIONAL */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;700;800&display=swap');
-:root { --primary: #004d26; --gold: #fbc02d; --white: #ffffff; --bg-light: #f8faf8; }
-body { background: #002211; color: var(--white); font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; width: 100vw; }
-.main-content { display: flex; flex: 1; overflow: hidden; width: 100%; }
-.video-container { flex: 1.8; background: #000; border-right: 4px solid var(--gold); position: relative; overflow: hidden; }
-#ytplayer { width: 100%; height: 100%; border: none; pointer-events: none; }
-.info-panel { flex: 1.2; background: var(--bg-light); display: flex; flex-direction: column; height: 100%; }
-.header { padding: 15px; text-align: center; background: white; border-bottom: 4px solid var(--gold); flex-shrink: 0; }
-.header img { height: 60px; width: auto; }
-.antrian-container { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; min-height: 0; }
-.loket-card { flex: 1; background: white; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; position: relative; overflow: hidden; transition: all 0.5s ease; }
-.loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 8px 25px; font-weight: 900; font-size: 1.2rem; border-bottom-right-radius: 20px; font-family: 'Montserrat', sans-serif; }
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;700;800&display=swap');
+    
+    :root { 
+      --primary: #004d26; 
+      --primary-dark: #002211;
+      --gold: #fbc02d; 
+      --white: #ffffff; 
+      --bg-light: #f8faf8; 
+    }
 
-.no-antrian { 
-  font-size: clamp(100px, 16vh, 220px); 
-  font-weight: 900; 
-  color: var(--primary); 
-  font-family: 'Montserrat', sans-serif; 
-  line-height: 0.9; 
-}
+    body { 
+      background: #001a0d; color: var(--white); font-family: 'Inter', sans-serif; 
+      margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; 
+      height: 100vh; width: 100vw; 
+    }
 
-.nama-nasabah { 
-  background: #f0f4f0; 
-  color: #555; 
-  padding: 12px 20px; 
-  border-radius: 15px; 
-  font-weight: 700; 
-  font-size: 1.3rem; 
-  width: 85%; 
-  text-align: center; 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  text-transform: uppercase;
-  margin-top: 15px; 
-}
+    /* --- LAYOUT AUTO-FIT --- */
+    .main-content { display: flex; flex: 1; overflow: hidden; width: 100%; }
+    
+    .video-container { 
+      flex: 1.8; background: #000; border-right: 5px solid var(--gold); 
+      position: relative; overflow: hidden; 
+    }
+    #ytplayer { width: 100%; height: 100%; border: none; pointer-events: none; }
 
-.footer-status { background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
-.sisa-box { text-align: left; }
-.sisa-box span { font-size: 0.8rem; color: #888; font-weight: 700; }
-.sisa-box b { font-size: 2.5rem; color: #d32f2f; display: block; line-height: 1; }
-.running-text-container { height: 55px; background: var(--primary); display: flex; align-items: center; border-top: 3px solid var(--gold); overflow: hidden; flex-shrink: 0; }
-.running-text { white-space: nowrap; position: relative; font-size: 1.3rem; font-weight: 600; color: white; width: 100%; }
-#overlay { position: fixed; inset: 0; background: var(--primary); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-.btn-start { background: var(--gold); color: var(--primary); padding: 25px 50px; border-radius: 50px; font-weight: 900; font-size: 20px; border: none; box-shadow: 0 8px 0 #b88a00; }
-</style>
+    .info-panel { 
+      flex: 1.2; background: var(--bg-light); display: flex; 
+      flex-direction: column; height: 100%; 
+    }
+
+    /* --- HEADER PRO --- */
+    .header { 
+      padding: 20px; text-align: center; background: white; 
+      border-bottom: 5px solid var(--gold); flex-shrink: 0; 
+    }
+    .header img { height: 55px; width: auto; }
+
+    /* --- ANTRIAN CARD PRO --- */
+    .antrian-container { 
+      flex: 1; display: flex; flex-direction: column; 
+      padding: 20px; gap: 20px; min-height: 0; 
+    }
+    
+    .loket-card { 
+      flex: 1; background: white; border-radius: 30px; 
+      display: flex; flex-direction: column; align-items: center; 
+      justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+      border: 1px solid #ddd; position: relative; overflow: hidden; 
+      transition: background 0.5s ease;
+    }
+    
+    .loket-label { 
+      position: absolute; top: 0; left: 0; background: var(--primary); 
+      color: var(--gold); padding: 10px 30px; font-weight: 900; 
+      font-size: 1.4rem; border-bottom-right-radius: 30px; 
+      font-family: 'Montserrat', sans-serif; 
+    }
+
+    .no-antrian { 
+      font-size: clamp(100px, 15vh, 200px); font-weight: 900; 
+      color: var(--primary); font-family: 'Montserrat', sans-serif; 
+      line-height: 0.8; margin-top: 10px;
+    }
+
+    .nama-nasabah { 
+      background: #f0f4f0; color: #444; padding: 12px 25px; 
+      border-radius: 15px; font-weight: 800; font-size: 1.4rem; 
+      width: 85%; text-align: center; margin-top: 20px;
+      text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* --- FOOTER & RUNNING TEXT --- */
+    .footer-status { 
+      background: white; padding: 15px 30px; display: flex; 
+      justify-content: space-between; align-items: center; 
+      border-top: 2px solid #eee; flex-shrink: 0; 
+    }
+    .sisa-box { text-align: left; }
+    .sisa-box span { font-size: 0.9rem; color: #888; font-weight: 700; }
+    .sisa-box b { font-size: 2.5rem; color: #d32f2f; display: block; line-height: 1; }
+
+    .running-text-container { 
+      height: 60px; background: var(--primary); display: flex; 
+      align-items: center; border-top: 4px solid var(--gold); 
+      overflow: hidden; flex-shrink: 0; 
+    }
+    .running-text { 
+      white-space: nowrap; font-size: 1.5rem; font-weight: 700; 
+      color: white; width: 100%; 
+    }
+
+    /* --- START OVERLAY --- */
+    #overlay { 
+      position: fixed; inset: 0; background: var(--primary); 
+      z-index: 999; display: flex; flex-direction: column; 
+      align-items: center; justify-content: center; cursor: pointer; 
+    }
+    .btn-start { 
+      background: var(--gold); color: var(--primary); 
+      padding: 30px 60px; border-radius: 60px; font-weight: 900; 
+      font-size: 24px; border: none; box-shadow: 0 10px 0 #b88a00; 
+    }
+  </style>
 </head>
 <body>
 
-<div id="overlay" onclick="aktifkanLayar()">
+<div id="overlay" onclick="aktifkanMonitor()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="status-text" style="margin-top:20px; letter-spacing: 2px; color: white;">KLIK UNTUK MEMULAI</p>
+  <p style="margin-top:20px; letter-spacing: 2px; color: white; font-weight: 700;">KLIK UNTUK MEMULAI LAYANAN</p>
 </div>
 
 <div class="main-content">
@@ -80,61 +138,41 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
     </div>
     <div class="footer-status">
       <div class="sisa-box"><span>SISA ANTREAN</span><b id="sisa">0</b></div>
-      <div style="font-size: 10px; color: #555; text-align: right; line-height: 1.2;">UNIT KERJA:<br><b id="outlet-label" style="color:var(--primary); font-size: 12px;">UNIT KERJA</b></div>
+      <div style="text-align: right; line-height: 1.2;">
+        <span style="font-size: 0.8rem; color: #888; font-weight: 700;">UNIT KERJA</span><br>
+        <b id="outlet-label" style="color:var(--primary); font-size: 1rem;">PEGADAIAN</b>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="running-text-container">
-  <marquee id="run-text" class="running-text" scrollamount="5">Selamat Datang di Pegadaian</marquee>
+  <marquee id="run-text" class="running-text" scrollamount="6">Selamat Datang di PT Pegadaian - Mengatasi Masalah Tanpa Masalah</marquee>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsL7S-_Y7wp5C42V_qEJ7P0VLyHUNn1wUGVB2h6cPx8F7XhHOYp2k4_tt9-4Meurre/exec";
-const VIDEO_PANCINGAN = "aT9V3HU3YY0"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
+const VIDEO_AWAL = "aT9V3HU3YY0"; 
 
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentPlaylist = [];
 
-// 1. Fungsi saat tombol diklik
-async function aktifkanLayar() {
-  document.getElementById('status-text').innerText = "MENGHUBUNGKAN KE SPREADSHEET...";
+async function aktifkanMonitor() {
+  document.getElementById('overlay').style.display = 'none';
+  audioOn = true;
   
+  // Load data awal (termasuk playlist Kolom B)
   try {
-    // Ambil data dari Spreadsheet SEBELUM player dibuat
     const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
     const init = await resp.json();
-    
-    document.getElementById('overlay').style.display = 'none';
-    audioOn = true;
     document.getElementById('outlet-label').innerText = init.namaOutlet;
-
-    // Tentukan video mana yang harus diputar pertama kali
-    let videoToPlay = VIDEO_PANCINGAN;
     if (init.playlist && init.playlist.length > 0) {
       currentPlaylist = init.playlist;
-      videoToPlay = currentPlaylist[0];
     }
+  } catch (e) { console.error("Gagal Muat Data Awal"); }
 
-    // Buat player dengan video asli dari B2 (atau pancingan jika kosong)
-    initYoutube(videoToPlay);
-
-    // Jika ada playlist lengkap, muat sisa videonya
-    if (currentPlaylist.length > 1) {
-      setTimeout(() => {
-        if (ytPlayer && ytPlayer.loadPlaylist) {
-          ytPlayer.loadPlaylist(currentPlaylist, 0, 0);
-        }
-      }, 3000);
-    }
-
-  } catch (e) { 
-    console.error("Gagal koneksi:", e);
-    // Jika gagal fetch, tetap masuk ke monitor pakai pancingan
-    document.getElementById('overlay').style.display = 'none';
-    audioOn = true;
-    initYoutube(VIDEO_PANCINGAN);
-  }
-
+  // Inisialisasi Player
+  initYoutube(currentPlaylist.length > 0 ? currentPlaylist[0] : VIDEO_AWAL);
+  
   setInterval(checkUpdate, 3000);
 }
 
@@ -145,44 +183,49 @@ function initYoutube(videoId) {
   ytPlayer = new YT.Player('ytplayer', {
     height: '100%', width: '100%',
     videoId: videoId,
-    playerVars: { 
+    playerVars: {
       'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1, 'rel': 0, 
       'modestbranding': 1, 'iv_load_policy': 3, 'enablejsapi': 1, 
-      'origin': window.location.origin 
+      'origin': window.location.origin
     },
     events: {
       'onReady': (event) => {
         event.target.playVideo();
-        setTimeout(() => { 
-          event.target.unMute(); 
-          event.target.setVolume(volumeSheet); 
-          event.target.playVideo();
+        setTimeout(() => {
+          event.target.unMute();
+          event.target.setVolume(volumeSheet);
+          // Jika ada playlist, muat semuanya ke sistem YouTube
+          if (currentPlaylist.length > 0) {
+            event.target.loadPlaylist(currentPlaylist, 0, 0);
+            event.target.setLoop(true);
+          }
         }, 2000);
       },
       'onStateChange': (event) => {
+        // LOGIKA LOOP PLAYLIST KOLOM B
         if (event.data === YT.PlayerState.ENDED) {
-           if (currentPlaylist.length > 1) {
-              const currentIndex = event.target.getPlaylistIndex();
-              if (currentIndex === currentPlaylist.length - 1) {
-                event.target.playVideoAt(0);
-              } else {
-                event.target.nextVideo();
-              }
-           } else {
-              event.target.playVideo();
-           }
+          if (currentPlaylist.length > 1) {
+            const currentIndex = event.target.getPlaylistIndex();
+            // Jika video terakhir di kolom B selesai, kembali ke B2
+            if (currentIndex === currentPlaylist.length - 1) {
+              event.target.playVideoAt(0);
+            } else {
+              event.target.nextVideo();
+            }
+          } else {
+            event.target.playVideo(); // Ulang video tunggal
+          }
         }
+        // Cegah video berhenti (Pause)
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
       }
     }
   });
 }
 
-function updatePlaylist(newList) {
+function syncPlaylist(newList) {
   if (!newList || newList.length === 0) return;
-  // Bandingkan list untuk menghindari restart video jika data sama
   if (JSON.stringify(newList) !== JSON.stringify(currentPlaylist)) {
-    console.log("Perubahan Spreadsheet terdeteksi, memperbarui antrean video...");
     currentPlaylist = newList;
     if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
       ytPlayer.loadPlaylist(currentPlaylist, 0, 0);
@@ -197,7 +240,7 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    if (res.playlist) updatePlaylist(res.playlist);
+    if (res.playlist) syncPlaylist(res.playlist);
 
     document.getElementById('l1-no').innerText = res.l1?.nomor || "-";
     document.getElementById('l1-nama').innerText = res.l1?.nama || "Petugas Siap";
@@ -206,7 +249,6 @@ async function checkUpdate() {
     document.getElementById('sisa').innerText = res.sisa || "0";
     document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
     
-    if (res.settings?.kecepatan) document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
     if (res.settings?.volume !== undefined) {
       volumeSheet = res.settings.volume;
       if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
@@ -214,19 +256,20 @@ async function checkUpdate() {
 
     if (res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
+      // Musik Pelan saat Panggilan
       if (ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
       const card = document.getElementById("card-l" + res.lastCall.loket);
       if (card) {
-        card.style.backgroundColor = "#fff9e6";
+        card.style.backgroundColor = "#fff9e6"; // Highlight kuning tipis
         setTimeout(() => {
           card.style.backgroundColor = "white";
           if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
         }, 8000);
       }
     }
-  } catch (e) { console.error("Update Error:", e); }
+  } catch (e) { console.error("Monitor Sync Error"); }
 }
 
 function panggilSuara(no, nama, loket) {
