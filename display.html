@@ -33,7 +33,7 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <div id="overlay" onclick="aktifkanLayar()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MENYIAPKAN PLAYER...</p>
+  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">KLIK UNTUK MEMULAI</p>
 </div>
 
 <div class="main-content">
@@ -68,40 +68,31 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
+const VIDEO_AWAL = "jfKfPfyJRdk"; // Video pancingan
 
-// Video Pancingan Baru (Lofi Chill - Biasanya sangat stabil untuk embed)
-const VIDEO_AWAL = "jfKfPfyJRdk"; 
-
-let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentVideoId = VIDEO_AWAL;
+let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentPlaylist = [];
 
 async function aktifkanLayar() {
-  // Tunggu YouTube API siap
-  if (typeof YT === 'undefined' || !YT.Player) {
-    document.getElementById('unit-name').innerText = "MENUNGGU API YOUTUBE...";
-    await new Promise(r => setTimeout(r, 1000));
-  }
-
   document.getElementById('overlay').style.display = 'none';
   audioOn = true;
   
-  // Buat player dengan video pancingan
-  initYoutube([VIDEO_AWAL]);
+  // 1. Inisialisasi Player dengan video tunggal (pancingan)
+  initYoutube(VIDEO_AWAL);
 
-  // Jeda sebentar lalu tarik data B2
+  // 2. Ambil data asli (Playlist B2)
   setTimeout(muatDataAwal, 2000);
   setInterval(checkUpdate, 3000);
 }
 
-function initYoutube(playlist) {
+function initYoutube(videoId) {
   const container = document.getElementById('player-anchor'); 
   container.innerHTML = `<div id="ytplayer"></div>`;
   
   ytPlayer = new YT.Player('ytplayer', {
     height: '100%', width: '100%',
-    videoId: playlist[0],
+    videoId: videoId,
     playerVars: {
-      'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1,
-      'playlist': playlist.join(','), 'loop': 1, 'rel': 0, 'enablejsapi': 1,
+      'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1, 'rel': 0, 'enablejsapi': 1,
       'origin': window.location.origin
     },
     events: {
@@ -113,11 +104,11 @@ function initYoutube(playlist) {
         }, 1500);
       },
       'onStateChange': (event) => {
+        // Jika playlist selesai, putar ulang dari awal (looping)
+        if (event.data === YT.PlayerState.ENDED && currentPlaylist.length > 0) {
+          ytPlayer.playVideoAt(0);
+        }
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
-      },
-      'onError': (e) => {
-        console.warn("Gagal memutar video pancingan, mencoba load playlist B2...");
-        muatDataAwal();
       }
     }
   });
@@ -130,12 +121,28 @@ async function muatDataAwal() {
     document.getElementById('outlet-label').innerText = init.namaOutlet;
     
     if (init.playlist && init.playlist.length > 0) {
-      currentVideoId = init.playlist[0];
-      if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
-        ytPlayer.loadPlaylist(init.playlist);
-      }
+      updatePlaylist(init.playlist);
     }
   } catch (e) { console.error("Error Load B2:", e); }
+}
+
+function updatePlaylist(newList) {
+  if (!newList || newList.length === 0) return;
+  
+  // Cek apakah list berbeda dengan yang sedang diputar
+  if (JSON.stringify(newList) !== JSON.stringify(currentPlaylist)) {
+    currentPlaylist = newList;
+    if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
+      // Load playlist baru dan set loop
+      ytPlayer.loadPlaylist({
+        playlist: currentPlaylist,
+        listType: 'playlist',
+        index: 0,
+        startSeconds: 0
+      });
+      ytPlayer.setLoop(true);
+    }
+  }
 }
 
 async function checkUpdate() {
@@ -144,20 +151,12 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Update Video
-    if (res.playlist && res.playlist.length > 0) {
-      const newVideoId = res.playlist[0];
-      if (newVideoId !== currentVideoId) {
-        currentVideoId = newVideoId;
-        if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
-           ytPlayer.loadPlaylist(res.playlist);
-        } else {
-           initYoutube(res.playlist);
-        }
-      }
+    // Update Playlist jika ada perubahan di B2
+    if (res.playlist) {
+      updatePlaylist(res.playlist);
     }
 
-    // Update Text Data
+    // Update Tampilan Text
     document.getElementById('l1-no').innerText = res.l1?.nomor || "-";
     document.getElementById('l1-nama').innerText = res.l1?.nama || "Petugas Siap";
     document.getElementById('l2-no').innerText = res.l2?.nomor || "-";
@@ -166,23 +165,23 @@ async function checkUpdate() {
     document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
     
     if (res.settings?.kecepatan) document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
-    if(res.settings?.volume !== undefined) {
+    if (res.settings?.volume !== undefined) {
       volumeSheet = res.settings.volume;
-      if(ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
+      if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
     }
 
-    // Logika Suara
-    if(res.lastCall && res.lastCall.waktu !== lastTime) {
+    // Suara Panggilan
+    if (res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
-      if(ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
+      if (ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
       const card = document.getElementById("card-l" + res.lastCall.loket);
-      if(card) {
+      if (card) {
         card.style.backgroundColor = "#fff9e6";
         setTimeout(() => {
           card.style.backgroundColor = "white";
-          if(ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
+          if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
         }, 8000);
       }
     }
