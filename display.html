@@ -33,7 +33,7 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <div id="overlay" onclick="aktifkanLayar()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MEMUAT DATA...</p>
+  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MENUNGGU KONEKSI...</p>
 </div>
 
 <div class="main-content">
@@ -68,74 +68,62 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
-let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentVideoId = "";
+// ID VIDEO PANCINGAN (Akan diputar pertama kali sebelum data B2 datang)
+const VIDEO_AWAL = "pWIs7-L_uS0"; 
 
-async function aktifkanLayar() {
+let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentVideoId = VIDEO_AWAL;
+
+// 1. Fungsi pertama kali dijalankan saat klik tombol
+function aktifkanLayar() {
   document.getElementById('overlay').style.display = 'none';
   audioOn = true;
   
+  // Langsung putar video pancingan agar player tercipta
+  initYoutube([VIDEO_AWAL]);
+
+  // Baru tarik data dari Google Sheets setelah player aktif
+  setTimeout(muatDataAwal, 2000);
+  setInterval(checkUpdate, 3000);
+}
+
+async function muatDataAwal() {
   try {
     const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
     const init = await resp.json();
     document.getElementById('outlet-label').innerText = init.namaOutlet;
     document.getElementById('unit-name').innerText = init.namaOutlet;
     
+    // Ganti video pancingan ke video asli dari B2
     if (init.playlist && init.playlist.length > 0) {
       currentVideoId = init.playlist[0];
-      // Inisialisasi YouTube Player secara langsung
-      initYoutube(init.playlist);
+      ytPlayer.loadPlaylist(init.playlist);
     }
-  } catch (e) { 
-    console.error("Gagal memuat data awal:", e);
-  }
-
-  setInterval(checkUpdate, 3000);
+  } catch (e) { console.error("Init Error:", e); }
 }
 
 function initYoutube(playlist) {
-  if (!playlist || playlist.length === 0) return;
-  
   const container = document.getElementById('player-anchor'); 
   container.innerHTML = `<div id="ytplayer"></div>`;
-  const firstId = playlist[0];
-  const listIds = playlist.join(',');
-
+  
   ytPlayer = new YT.Player('ytplayer', {
-    height: '100%',
-    width: '100%',
-    videoId: firstId,
+    height: '100%', width: '100%',
+    videoId: playlist[0],
     playerVars: {
-      'autoplay': 1,
-      'mute': 1,           // Mute awal wajib untuk izin autoplay browser
-      'controls': 0,
-      'disablekb': 1,
-      'playlist': listIds,
-      'loop': 1,
-      'rel': 0,
-      'enablejsapi': 1,
+      'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1,
+      'playlist': playlist.join(','), 'loop': 1, 'rel': 0, 'enablejsapi': 1,
       'origin': window.location.origin
     },
     events: {
       'onReady': (event) => {
         event.target.playVideo();
-        // Berikan jeda untuk unmute agar suara muncul otomatis
         setTimeout(() => {
           event.target.unMute();
           event.target.setVolume(volumeSheet);
-          event.target.playVideo(); 
+          event.target.playVideo();
         }, 1500);
       },
       'onStateChange': (event) => {
-        // Paksa putar jika terjeda atau video berakhir (loop)
-        if (event.data === YT.PlayerState.PAUSED || event.data === -1) {
-          event.target.playVideo();
-        }
-      },
-      'onError': () => {
-        console.warn("YouTube API Error, mencoba metode IFrame langsung...");
-        container.innerHTML = `<iframe id="ytplayer" 
-          src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${listIds}&loop=1&controls=0" 
-          style="width:100%; height:100%; border:none;" allow="autoplay"></iframe>`;
+        if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
       }
     }
   });
@@ -147,7 +135,7 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Update Playlist jika ada perubahan link di Spreadsheet
+    // Sinkronisasi Video dari B2
     if (res.playlist && res.playlist.length > 0) {
       const newVideoId = res.playlist[0];
       if (newVideoId !== currentVideoId) {
@@ -165,27 +153,18 @@ async function checkUpdate() {
     document.getElementById('l1-nama').innerText = (res.l1 && res.l1.nama) ? res.l1.nama : "Petugas Siap";
     document.getElementById('l2-no').innerText = (res.l2 && res.l2.nomor) ? res.l2.nomor : "-";
     document.getElementById('l2-nama').innerText = (res.l2 && res.l2.nama) ? res.l2.nama : "Petugas Siap";
-    
     document.getElementById('sisa').innerText = res.sisa || "0";
     document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
     
-    if (res.settings && res.settings.kecepatan) {
-      document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
-    }
-    
+    if (res.settings && res.settings.kecepatan) document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
     if(res.settings && res.settings.volume !== undefined) {
       volumeSheet = res.settings.volume;
-      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
-        ytPlayer.setVolume(volumeSheet);
-      }
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(volumeSheet);
     }
 
-    // Logika Pemanggilan
     if(res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
-      if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
-        ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
-      }
+      if(ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
       
       const card = document.getElementById("card-l" + res.lastCall.loket);
@@ -193,9 +172,7 @@ async function checkUpdate() {
         card.style.backgroundColor = "#fff9e6";
         setTimeout(() => {
           card.style.backgroundColor = "white";
-          if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
-            ytPlayer.setVolume(volumeSheet);
-          }
+          if(ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(volumeSheet);
         }, 8000);
       }
     }
