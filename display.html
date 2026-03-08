@@ -4,7 +4,7 @@
 <base target="_top">
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
-/* CSS TETAP SESUAI DESAIN ASLI ANDA */
+/* CSS TETAP SESUAI DESAIN ASLI ANDA DENGAN PENYESUAIAN PROPORSI */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;700;800&display=swap');
 :root { --primary: #004d26; --gold: #fbc02d; --white: #ffffff; --bg-light: #f8faf8; }
 body { background: #002211; color: var(--white); font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; width: 100vw; }
@@ -15,10 +15,50 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 .header { padding: 15px; text-align: center; background: white; border-bottom: 4px solid var(--gold); flex-shrink: 0; }
 .header img { height: 60px; width: auto; }
 .antrian-container { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; min-height: 0; }
-.loket-card { flex: 1; background: white; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; position: relative; overflow: hidden; transition: all 0.5s ease; }
+
+.loket-card { 
+  flex: 1; 
+  background: white; 
+  border-radius: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+  border: 1px solid #e0e0e0; 
+  position: relative; 
+  overflow: hidden; 
+  transition: all 0.5s ease; 
+}
+
 .loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 8px 25px; font-weight: 900; font-size: 1.2rem; border-bottom-right-radius: 20px; font-family: 'Montserrat', sans-serif; }
-.no-antrian { font-size: clamp(60px, 10vh, 140px); font-weight: 900; color: var(--primary); font-family: 'Montserrat', sans-serif; line-height: 1; }
-.nama-nasabah { background: #f0f4f0; color: #555; padding: 10px 20px; border-radius: 15px; font-weight: 700; font-size: 1.1rem; width: 85%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+
+/* PERUBAHAN: Nomor Antrean Diperbesar agar lebih Proporsional */
+.no-antrian { 
+  font-size: clamp(100px, 16vh, 220px); 
+  font-weight: 900; 
+  color: var(--primary); 
+  font-family: 'Montserrat', sans-serif; 
+  line-height: 0.9; 
+}
+
+/* PERUBAHAN: Nama Nasabah diturunkan sedikit dengan margin-top */
+.nama-nasabah { 
+  background: #f0f4f0; 
+  color: #555; 
+  padding: 12px 20px; 
+  border-radius: 15px; 
+  font-weight: 700; 
+  font-size: 1.3rem; 
+  width: 85%; 
+  text-align: center; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  text-transform: uppercase;
+  margin-top: 15px; 
+}
+
 .footer-status { background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
 .sisa-box { text-align: left; }
 .sisa-box span { font-size: 0.8rem; color: #888; font-weight: 700; }
@@ -68,18 +108,14 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
-const VIDEO_AWAL = "jfKfPfyJRdk"; // Video pancingan
+const VIDEO_AWAL = "jfKfPfyJRdk"; 
 
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentPlaylist = [];
 
 async function aktifkanLayar() {
   document.getElementById('overlay').style.display = 'none';
   audioOn = true;
-  
-  // 1. Inisialisasi Player dengan video tunggal (pancingan)
   initYoutube(VIDEO_AWAL);
-
-  // 2. Ambil data asli (Playlist B2)
   setTimeout(muatDataAwal, 2000);
   setInterval(checkUpdate, 3000);
 }
@@ -87,27 +123,17 @@ async function aktifkanLayar() {
 function initYoutube(videoId) {
   const container = document.getElementById('player-anchor'); 
   container.innerHTML = `<div id="ytplayer"></div>`;
-  
   ytPlayer = new YT.Player('ytplayer', {
     height: '100%', width: '100%',
     videoId: videoId,
-    playerVars: {
-      'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1, 'rel': 0, 'enablejsapi': 1,
-      'origin': window.location.origin
-    },
+    playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'disablekb': 1, 'rel': 0, 'enablejsapi': 1, 'origin': window.location.origin },
     events: {
       'onReady': (event) => {
         event.target.playVideo();
-        setTimeout(() => {
-          event.target.unMute();
-          event.target.setVolume(volumeSheet);
-        }, 1500);
+        setTimeout(() => { event.target.unMute(); event.target.setVolume(volumeSheet); }, 1500);
       },
       'onStateChange': (event) => {
-        // Jika playlist selesai, putar ulang dari awal (looping)
-        if (event.data === YT.PlayerState.ENDED && currentPlaylist.length > 0) {
-          ytPlayer.playVideoAt(0);
-        }
+        if (event.data === YT.PlayerState.ENDED && currentPlaylist.length > 0) ytPlayer.playVideoAt(0);
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
       }
     }
@@ -119,27 +145,16 @@ async function muatDataAwal() {
     const resp = await fetch(`${SCRIPT_URL}?action=getInitData`);
     const init = await resp.json();
     document.getElementById('outlet-label').innerText = init.namaOutlet;
-    
-    if (init.playlist && init.playlist.length > 0) {
-      updatePlaylist(init.playlist);
-    }
+    if (init.playlist && init.playlist.length > 0) updatePlaylist(init.playlist);
   } catch (e) { console.error("Error Load B2:", e); }
 }
 
 function updatePlaylist(newList) {
   if (!newList || newList.length === 0) return;
-  
-  // Cek apakah list berbeda dengan yang sedang diputar
   if (JSON.stringify(newList) !== JSON.stringify(currentPlaylist)) {
     currentPlaylist = newList;
     if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
-      // Load playlist baru dan set loop
-      ytPlayer.loadPlaylist({
-        playlist: currentPlaylist,
-        listType: 'playlist',
-        index: 0,
-        startSeconds: 0
-      });
+      ytPlayer.loadPlaylist({ playlist: currentPlaylist, listType: 'playlist', index: 0, startSeconds: 0 });
       ytPlayer.setLoop(true);
     }
   }
@@ -150,32 +165,22 @@ async function checkUpdate() {
   try {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
-    
-    // Update Playlist jika ada perubahan di B2
-    if (res.playlist) {
-      updatePlaylist(res.playlist);
-    }
-
-    // Update Tampilan Text
+    if (res.playlist) updatePlaylist(res.playlist);
     document.getElementById('l1-no').innerText = res.l1?.nomor || "-";
     document.getElementById('l1-nama').innerText = res.l1?.nama || "Petugas Siap";
     document.getElementById('l2-no').innerText = res.l2?.nomor || "-";
     document.getElementById('l2-nama').innerText = res.l2?.nama || "Petugas Siap";
     document.getElementById('sisa').innerText = res.sisa || "0";
     document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
-    
     if (res.settings?.kecepatan) document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
     if (res.settings?.volume !== undefined) {
       volumeSheet = res.settings.volume;
       if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
     }
-
-    // Suara Panggilan
     if (res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
       if (ytPlayer?.setVolume) ytPlayer.setVolume(Math.max(volumeSheet - 40, 5));
       panggilSuara(res.lastCall.nomor, res.lastCall.nama, res.lastCall.loket);
-      
       const card = document.getElementById("card-l" + res.lastCall.loket);
       if (card) {
         card.style.backgroundColor = "#fff9e6";
