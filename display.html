@@ -33,7 +33,7 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <div id="overlay" onclick="aktifkanLayar()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MENUNGGU KONEKSI...</p>
+  <p id="unit-name" style="margin-top:20px; letter-spacing: 2px; color: white;">MENUNGGU API YOUTUBE...</p>
 </div>
 
 <div class="main-content">
@@ -68,21 +68,37 @@ body { background: #002211; color: var(--white); font-family: 'Inter', sans-seri
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSIFn_5puCP5QxD2SvGUgBYyw537PFKuZ9CXE6Xu60kkeN56rVjMnekZuV_-nWxkuJ/exec";
-// ID VIDEO PANCINGAN (Akan diputar pertama kali sebelum data B2 datang)
+// VIDEO PANCINGAN: Agar player tercipta seketika saat tombol diklik
 const VIDEO_AWAL = "pWIs7-L_uS0"; 
 
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50, currentVideoId = VIDEO_AWAL;
 
-// 1. Fungsi pertama kali dijalankan saat klik tombol
-function aktifkanLayar() {
+// Fungsi untuk memastikan YouTube API sudah siap sebelum tombol diproses
+function pastikanYTReady() {
+  return new Promise((resolve) => {
+    if (typeof YT !== 'undefined' && YT.Player) return resolve();
+    const interval = setInterval(() => {
+      if (typeof YT !== 'undefined' && YT.Player) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+}
+
+async function aktifkanLayar() {
+  await pastikanYTReady(); // Tunggu API siap
+  
   document.getElementById('overlay').style.display = 'none';
   audioOn = true;
   
-  // Langsung putar video pancingan agar player tercipta
+  // 1. Buat Player dengan video pancingan (Instan)
   initYoutube([VIDEO_AWAL]);
 
-  // Baru tarik data dari Google Sheets setelah player aktif
-  setTimeout(muatDataAwal, 2000);
+  // 2. Ambil data asli dari Spreadsheet
+  setTimeout(muatDataAwal, 1500);
+  
+  // 3. Jalankan loop update
   setInterval(checkUpdate, 3000);
 }
 
@@ -93,12 +109,14 @@ async function muatDataAwal() {
     document.getElementById('outlet-label').innerText = init.namaOutlet;
     document.getElementById('unit-name').innerText = init.namaOutlet;
     
-    // Ganti video pancingan ke video asli dari B2
     if (init.playlist && init.playlist.length > 0) {
       currentVideoId = init.playlist[0];
-      ytPlayer.loadPlaylist(init.playlist);
+      // Jika player sudah ada, ganti isinya ke playlist B2
+      if (ytPlayer && typeof ytPlayer.loadPlaylist === 'function') {
+        ytPlayer.loadPlaylist(init.playlist);
+      }
     }
-  } catch (e) { console.error("Init Error:", e); }
+  } catch (e) { console.error("Gagal muat data awal:", e); }
 }
 
 function initYoutube(playlist) {
@@ -119,11 +137,20 @@ function initYoutube(playlist) {
         setTimeout(() => {
           event.target.unMute();
           event.target.setVolume(volumeSheet);
-          event.target.playVideo();
+          event.target.playVideo(); // Paksa putar lagi setelah unmute
         }, 1500);
       },
       'onStateChange': (event) => {
-        if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
+        // Jika tidak sengaja terhenti, paksa putar kembali
+        if (event.data === YT.PlayerState.PAUSED) {
+          event.target.playVideo();
+        }
+      },
+      'onError': () => {
+        // Fallback jika API gagal
+        container.innerHTML = `<iframe id="ytplayer" 
+          src="https://www.youtube.com/embed/${playlist[0]}?autoplay=1&mute=0&playlist=${playlist.join(',')}&loop=1" 
+          style="width:100%; height:100%; border:none;" allow="autoplay"></iframe>`;
       }
     }
   });
@@ -135,7 +162,6 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Sinkronisasi Video dari B2
     if (res.playlist && res.playlist.length > 0) {
       const newVideoId = res.playlist[0];
       if (newVideoId !== currentVideoId) {
