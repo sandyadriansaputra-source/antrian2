@@ -82,11 +82,8 @@ async function aktifkanLayar() {
     
     if (init.playlist && init.playlist.length > 0) {
       currentVideoId = init.playlist[0];
-      if (typeof YT !== 'undefined' && YT.loaded) {
-        initYoutube(init.playlist);
-      } else {
-        setTimeout(() => initYoutube(init.playlist), 1500);
-      }
+      // Inisialisasi YouTube Player secara langsung
+      initYoutube(init.playlist);
     }
   } catch (e) { 
     console.error("Gagal memuat data awal:", e);
@@ -101,7 +98,7 @@ function initYoutube(playlist) {
   const container = document.getElementById('player-anchor'); 
   container.innerHTML = `<div id="ytplayer"></div>`;
   const firstId = playlist[0];
-  const list = playlist.join(',');
+  const listIds = playlist.join(',');
 
   ytPlayer = new YT.Player('ytplayer', {
     height: '100%',
@@ -109,10 +106,10 @@ function initYoutube(playlist) {
     videoId: firstId,
     playerVars: {
       'autoplay': 1,
-      'mute': 1,
+      'mute': 1,           // Mute awal wajib untuk izin autoplay browser
       'controls': 0,
       'disablekb': 1,
-      'playlist': list,
+      'playlist': listIds,
       'loop': 1,
       'rel': 0,
       'enablejsapi': 1,
@@ -121,20 +118,23 @@ function initYoutube(playlist) {
     events: {
       'onReady': (event) => {
         event.target.playVideo();
+        // Berikan jeda untuk unmute agar suara muncul otomatis
         setTimeout(() => {
           event.target.unMute();
           event.target.setVolume(volumeSheet);
-        }, 2000);
+          event.target.playVideo(); 
+        }, 1500);
       },
       'onStateChange': (event) => {
-        if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+        // Paksa putar jika terjeda atau video berakhir (loop)
+        if (event.data === YT.PlayerState.PAUSED || event.data === -1) {
           event.target.playVideo();
         }
       },
       'onError': () => {
         console.warn("YouTube API Error, mencoba metode IFrame langsung...");
         container.innerHTML = `<iframe id="ytplayer" 
-          src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${list}&loop=1&controls=0" 
+          src="https://www.youtube.com/embed/${firstId}?autoplay=1&mute=0&playlist=${listIds}&loop=1&controls=0" 
           style="width:100%; height:100%; border:none;" allow="autoplay"></iframe>`;
       }
     }
@@ -147,6 +147,7 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
+    // Update Playlist jika ada perubahan link di Spreadsheet
     if (res.playlist && res.playlist.length > 0) {
       const newVideoId = res.playlist[0];
       if (newVideoId !== currentVideoId) {
@@ -159,6 +160,7 @@ async function checkUpdate() {
       }
     }
 
+    // Update Tampilan Data
     document.getElementById('l1-no').innerText = (res.l1 && res.l1.nomor) ? res.l1.nomor : "-";
     document.getElementById('l1-nama').innerText = (res.l1 && res.l1.nama) ? res.l1.nama : "Petugas Siap";
     document.getElementById('l2-no').innerText = (res.l2 && res.l2.nomor) ? res.l2.nomor : "-";
@@ -178,6 +180,7 @@ async function checkUpdate() {
       }
     }
 
+    // Logika Pemanggilan
     if(res.lastCall && res.lastCall.waktu !== lastTime) {
       lastTime = res.lastCall.waktu;
       if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
