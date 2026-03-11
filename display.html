@@ -13,27 +13,27 @@
     .video-container { flex: 1.8; background: #000; border-right: 5px solid var(--gold); position: relative; overflow: hidden; }
     #ytplayer { width: 100%; height: 100%; border: none; pointer-events: none; }
     .info-panel { flex: 1.2; background: var(--bg-light); display: flex; flex-direction: column; height: 100%; }
-    .header { padding: 20px; text-align: center; background: white; border-bottom: 5px solid var(--gold); flex-shrink: 0; }
-    .header img { height: 55px; width: auto; }
-    .antrian-container { flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 20px; min-height: 0; }
+    .header { padding: 10px 20px; text-align: center; background: white; border-bottom: 5px solid var(--gold); flex-shrink: 0; }
+    .header img { height: 45px; width: auto; }
+    .antrian-container { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; min-height: 0; }
     .loket-card { flex: 1; background: white; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #ddd; position: relative; overflow: hidden; }
-    .loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 10px 30px; font-weight: 900; font-size: 1.4rem; border-bottom-right-radius: 30px; font-family: 'Montserrat', sans-serif; }
-    .no-antrian { font-size: clamp(100px, 15vh, 200px); font-weight: 900; color: var(--primary); font-family: 'Montserrat', sans-serif; line-height: 0.8; margin-top: 10px; }
-    .nama-nasabah { background: #f0f4f0; color: #444; padding: 12px 25px; border-radius: 15px; font-weight: 800; font-size: 1.4rem; width: 85%; text-align: center; margin-top: 20px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .footer-status { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
+    .loket-label { position: absolute; top: 0; left: 0; background: var(--primary); color: var(--gold); padding: 8px 25px; font-weight: 900; font-size: 1.2rem; border-bottom-right-radius: 30px; font-family: 'Montserrat', sans-serif; }
+    .no-antrian { font-size: clamp(90px, 14vh, 190px); font-weight: 900; color: var(--primary); font-family: 'Montserrat', sans-serif; line-height: 0.8; margin-top: 5px; }
+    .nama-nasabah { background: #f0f4f0; color: #444; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 1.2rem; width: 85%; text-align: center; margin-top: 15px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .footer-status { background: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; flex-shrink: 0; }
     .sisa-box { text-align: left; }
-    .sisa-box b { font-size: 2.5rem; color: #d32f2f; display: block; line-height: 1; }
-    .running-text-container { height: 60px; background: var(--primary); display: flex; align-items: center; border-top: 4px solid var(--gold); overflow: hidden; flex-shrink: 0; }
-    .running-text { white-space: nowrap; font-size: 1.5rem; font-weight: 700; color: white; width: 100%; }
+    .sisa-box b { font-size: 2.2rem; color: #d32f2f; display: block; line-height: 1; }
+    .running-text-container { height: 45px; background: var(--primary); display: flex; align-items: center; border-top: 4px solid var(--gold); overflow: hidden; flex-shrink: 0; }
+    .running-text { white-space: nowrap; font-size: 1.2rem; font-weight: 700; color: white; width: 100%; }
     #overlay { position: fixed; inset: 0; background: var(--primary); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-start { background: var(--gold); color: var(--primary); padding: 30px 60px; border-radius: 60px; font-weight: 900; font-size: 24px; border: none; box-shadow: 0 10px 0 #b88a00; }
+    .btn-start { background: var(--gold); color: var(--primary); padding: 25px 50px; border-radius: 60px; font-weight: 900; font-size: 20px; border: none; box-shadow: 0 8px 0 #b88a00; }
   </style>
 </head>
 <body>
 
 <div id="overlay" onclick="aktifkanMonitor()">
   <button class="btn-start">AKTIFKAN MONITOR TV</button>
-  <p style="margin-top:20px; letter-spacing: 2px; color: white; font-weight: 700;">KLIK UNTUK MEMULAI LAYANAN</p>
+  <p style="margin-top:15px; letter-spacing: 2px; color: white; font-weight: 700;">KLIK UNTUK MEMULAI LAYANAN</p>
 </div>
 
 <div class="main-content">
@@ -57,9 +57,9 @@
     </div>
     <div class="footer-status">
       <div class="sisa-box"><span>SISA ANTREAN</span><b id="sisa">0</b></div>
-      <div style="text-align: right; line-height: 1.2;">
-        <span style="font-size: 0.8rem; color: #888; font-weight: 700;">UNIT KERJA</span><br>
-        <b id="outlet-label" style="color:var(--primary); font-size: 1rem;">PEGADAIAN</b>
+      <div style="text-align: right; line-height: 1.1;">
+        <span style="font-size: 0.75rem; color: #888; font-weight: 700;">UNIT KERJA</span><br>
+        <b id="outlet-label" style="color:var(--primary); font-size: 0.9rem;">PEGADAIAN</b>
       </div>
     </div>
   </div>
@@ -75,7 +75,7 @@ const VIDEO_PANCINGAN = "aT9V3HU3YY0";
 
 let lastTime = "", audioOn = false, ytPlayer, volumeSheet = 50;
 let currentPlaylist = [];
-let currentVideoIndex = 0; // Kunci utama sequence manual
+let currentVideoIndex = 0; 
 
 async function aktifkanMonitor() {
   document.getElementById('overlay').style.display = 'none';
@@ -87,6 +87,10 @@ async function aktifkanMonitor() {
     document.getElementById('outlet-label').innerText = init.namaOutlet;
     if (init.playlist && init.playlist.length > 0) {
       currentPlaylist = init.playlist;
+    }
+    // Set kecepatan awal jika ada
+    if (init.settings?.kecepatan) {
+      document.getElementById('run-text').scrollAmount = init.settings.kecepatan;
     }
   } catch (e) { console.error("Gagal Muat Data"); }
 
@@ -108,14 +112,12 @@ function initYoutube(videoId) {
         setTimeout(() => { event.target.unMute(); event.target.setVolume(volumeSheet); }, 2000);
       },
       'onStateChange': (event) => {
-        // --- LOGIKA MANUAL NEXT VIDEO ---
         if (event.data === YT.PlayerState.ENDED) {
           putarVideoBerikutnya();
         }
         if (event.data === YT.PlayerState.PAUSED) event.target.playVideo();
       },
       'onError': () => {
-        console.warn("Video bermasalah, loncat ke berikutnya...");
         putarVideoBerikutnya();
       }
     }
@@ -127,14 +129,10 @@ function putarVideoBerikutnya() {
     ytPlayer.loadVideoById(VIDEO_PANCINGAN);
     return;
   }
-
   currentVideoIndex++;
-  // Jika sudah di akhir kolom B, kembali ke sel B2 (index 0)
   if (currentVideoIndex >= currentPlaylist.length) {
     currentVideoIndex = 0;
   }
-
-  console.log("Memutar video index:", currentVideoIndex, "ID:", currentPlaylist[currentVideoIndex]);
   ytPlayer.loadVideoById(currentPlaylist[currentVideoIndex]);
 }
 
@@ -144,10 +142,8 @@ async function checkUpdate() {
     const response = await fetch(`${SCRIPT_URL}?action=getMonitorData`);
     const res = await response.json();
     
-    // Sinkronisasi Playlist jika ada perubahan di Google Sheets
     if (res.playlist && JSON.stringify(res.playlist) !== JSON.stringify(currentPlaylist)) {
       currentPlaylist = res.playlist;
-      console.log("Playlist diperbarui dari Sheets");
     }
 
     document.getElementById('l1-no').innerText = res.l1?.nomor || "-";
@@ -157,6 +153,11 @@ async function checkUpdate() {
     document.getElementById('sisa').innerText = res.sisa || "0";
     document.getElementById('run-text').innerText = res.runningText || "Selamat Datang";
     
+    // --- KONTROL KECEPATAN DARI SHEET ---
+    if (res.settings?.kecepatan) {
+      document.getElementById('run-text').scrollAmount = res.settings.kecepatan;
+    }
+
     if (res.settings?.volume !== undefined) {
       volumeSheet = res.settings.volume;
       if (ytPlayer?.setVolume) ytPlayer.setVolume(volumeSheet);
@@ -181,8 +182,8 @@ async function checkUpdate() {
 
 function panggilSuara(no, nama, loket) {
   window.speechSynthesis.cancel();
-  let noSpaced = no.toString().split('').join(' ');
-  let teks = `Nomor antrean, ${noSpaced}, . . Atas nama, ${nama.toLowerCase()}, . . Silahkan ke loket ${loket}`;
+  let sebutanNo = no.toString(); 
+  let teks = `Nomor antrean, ${sebutanNo}, . . Atas nama, ${nama.toLowerCase()}, . . Silahkan ke loket ${loket}`;
   let msg = new SpeechSynthesisUtterance(teks);
   msg.lang = 'id-ID'; msg.volume = 1.0; msg.rate = 0.8; msg.pitch = 1.1; 
   window.speechSynthesis.speak(msg);
